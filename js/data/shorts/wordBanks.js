@@ -1,13 +1,13 @@
 // ============================================================================
 // Word banks — FRENCH. Nouns carry un/une + le/la/l' and gender; adjectives
-// are used PREDICATIVELY only (Le chien est petit.), which sidesteps French
-// adjective-position rules while keeping full gender agreement. Definite
-// article "l'" attaches without a space; "de/d'" forms are derived from it.
+// carry gender forms and a `p` flag marking the ones that can safely follow
+// the noun (postnominal) — pre-nominal adjectives (grand, petit, beau...)
+// are used predicatively only. "l'" attaches without a space; de/d' derived.
 //
 // Noun = { w, ind, def, g, tr, topic }
-// Adj  = { m, f, tr }
-// Verb = { inf, first, trInf, tr1, trGer }  (first is the FULL "je ..." form,
-//                                            so elision "j'écris" stays right)
+// Adj  = { m, f, tr, p }
+// Verb = { inf, first, part, trInf, tr1, trGer, trPast, trFut }
+//         (first is the FULL "je ..." form so elision "j'écris" stays right)
 // ============================================================================
 
 const N = (w, ind, def, g, tr, topic) => ({ w, ind, def, g, tr, topic });
@@ -80,38 +80,67 @@ export const NOUNS = [
 
 export const GOODS = NOUNS.filter(n => ['food', 'objects', 'clothes'].includes(n.topic));
 export const PLACES = NOUNS.filter(n => n.topic === 'places');
+export const OWNABLE = NOUNS.filter(n => ['food', 'objects', 'clothes', 'animals', 'transport'].includes(n.topic));
 
 export const ADJECTIVES = [
-  ['grand', 'grande', 'büyük'], ['petit', 'petite', 'küçük'],
-  ['nouveau', 'nouvelle', 'yeni'], ['vieux', 'vieille', 'eski'],
-  ['beau', 'belle', 'güzel'], ['bon', 'bonne', 'iyi'],
-  ['long', 'longue', 'uzun'], ['court', 'courte', 'kısa'],
-  ['chaud', 'chaude', 'sıcak'], ['froid', 'froide', 'soğuk'],
-  ['propre', 'propre', 'temiz'], ['sale', 'sale', 'kirli'],
-  ['rapide', 'rapide', 'hızlı'], ['lent', 'lente', 'yavaş'],
-  ['lourd', 'lourde', 'ağır'], ['léger', 'légère', 'hafif'],
-  ['cher', 'chère', 'pahalı'], ['moderne', 'moderne', 'modern'],
-  ['plein', 'pleine', 'dolu'], ['vide', 'vide', 'boş']
-].map(([m, f, tr]) => ({ m, f, tr }));
+  ['grand', 'grande', 'büyük', false], ['petit', 'petite', 'küçük', false],
+  ['nouveau', 'nouvelle', 'yeni', false], ['vieux', 'vieille', 'eski', false],
+  ['beau', 'belle', 'güzel', false], ['bon', 'bonne', 'iyi', false],
+  ['long', 'longue', 'uzun', false], ['court', 'courte', 'kısa', false],
+  ['chaud', 'chaude', 'sıcak', true], ['froid', 'froide', 'soğuk', true],
+  ['propre', 'propre', 'temiz', true], ['sale', 'sale', 'kirli', true],
+  ['rapide', 'rapide', 'hızlı', true], ['lent', 'lente', 'yavaş', true],
+  ['lourd', 'lourde', 'ağır', true], ['léger', 'légère', 'hafif', true],
+  ['cher', 'chère', 'pahalı', true], ['moderne', 'moderne', 'modern', true],
+  ['plein', 'pleine', 'dolu', true], ['vide', 'vide', 'boş', true]
+].map(([m, f, tr, p]) => ({ m, f, tr, p }));
 
 export const VERBS = [
-  ['nager', 'je nage', 'yüzmek', 'yüzüyorum', 'yüzmeyi'],
-  ['courir', 'je cours', 'koşmak', 'koşuyorum', 'koşmayı'],
-  ['dormir', 'je dors', 'uyumak', 'uyuyorum', 'uyumayı'],
-  ['lire', 'je lis', 'okumak', 'okuyorum', 'okumayı'],
-  ['écrire', "j'écris", 'yazmak', 'yazıyorum', 'yazmayı'],
-  ['jouer', 'je joue', 'oynamak', 'oynuyorum', 'oynamayı'],
-  ['travailler', 'je travaille', 'çalışmak', 'çalışıyorum', 'çalışmayı'],
-  ['apprendre', "j'apprends", 'öğrenmek', 'öğreniyorum', 'öğrenmeyi'],
-  ['cuisiner', 'je cuisine', 'yemek pişirmek', 'yemek pişiriyorum', 'yemek pişirmeyi'],
-  ['chanter', 'je chante', 'şarkı söylemek', 'şarkı söylüyorum', 'şarkı söylemeyi'],
-  ['danser', 'je danse', 'dans etmek', 'dans ediyorum', 'dans etmeyi'],
-  ['attendre', "j'attends", 'beklemek', 'bekliyorum', 'beklemeyi'],
-  ['voyager', 'je voyage', 'seyahat etmek', 'seyahat ediyorum', 'seyahat etmeyi'],
-  ['peindre', 'je peins', 'resim yapmak', 'resim yapıyorum', 'resim yapmayı'],
-  ['rire', 'je ris', 'gülmek', 'gülüyorum', 'gülmeyi'],
-  ['étudier', "j'étudie", 'ders çalışmak', 'ders çalışıyorum', 'ders çalışmayı']
-].map(([inf, first, trInf, tr1, trGer]) => ({ inf, first, trInf, tr1, trGer }));
+  ['nager', 'je nage', 'nagé', 'yüzmek', 'yüzüyorum', 'yüzmeyi', 'yüzdüm', 'yüzeceğim'],
+  ['courir', 'je cours', 'couru', 'koşmak', 'koşuyorum', 'koşmayı', 'koştum', 'koşacağım'],
+  ['dormir', 'je dors', 'dormi', 'uyumak', 'uyuyorum', 'uyumayı', 'uyudum', 'uyuyacağım'],
+  ['lire', 'je lis', 'lu', 'okumak', 'okuyorum', 'okumayı', 'okudum', 'okuyacağım'],
+  ['écrire', "j'écris", 'écrit', 'yazmak', 'yazıyorum', 'yazmayı', 'yazdım', 'yazacağım'],
+  ['jouer', 'je joue', 'joué', 'oynamak', 'oynuyorum', 'oynamayı', 'oynadım', 'oynayacağım'],
+  ['travailler', 'je travaille', 'travaillé', 'çalışmak', 'çalışıyorum', 'çalışmayı', 'çalıştım', 'çalışacağım'],
+  ['apprendre', "j'apprends", 'appris', 'öğrenmek', 'öğreniyorum', 'öğrenmeyi', 'öğrendim', 'öğreneceğim'],
+  ['cuisiner', 'je cuisine', 'cuisiné', 'yemek pişirmek', 'yemek pişiriyorum', 'yemek pişirmeyi', 'yemek pişirdim', 'yemek pişireceğim'],
+  ['chanter', 'je chante', 'chanté', 'şarkı söylemek', 'şarkı söylüyorum', 'şarkı söylemeyi', 'şarkı söyledim', 'şarkı söyleyeceğim'],
+  ['danser', 'je danse', 'dansé', 'dans etmek', 'dans ediyorum', 'dans etmeyi', 'dans ettim', 'dans edeceğim'],
+  ['attendre', "j'attends", 'attendu', 'beklemek', 'bekliyorum', 'beklemeyi', 'bekledim', 'bekleyeceğim'],
+  ['voyager', 'je voyage', 'voyagé', 'seyahat etmek', 'seyahat ediyorum', 'seyahat etmeyi', 'seyahat ettim', 'seyahat edeceğim'],
+  ['peindre', 'je peins', 'peint', 'resim yapmak', 'resim yapıyorum', 'resim yapmayı', 'resim yaptım', 'resim yapacağım'],
+  ['rire', 'je ris', 'ri', 'gülmek', 'gülüyorum', 'gülmeyi', 'güldüm', 'güleceğim'],
+  ['étudier', "j'étudie", 'étudié', 'ders çalışmak', 'ders çalışıyorum', 'ders çalışmayı', 'ders çalıştım', 'ders çalışacağım']
+].map(([inf, first, part, trInf, tr1, trGer, trPast, trFut]) =>
+  ({ inf, first, part, trInf, tr1, trGer, trPast, trFut }));
+
+// "I have been ...ing for ..." — French present + depuis.
+export const ACTIVITIES = [
+  ["J'attends", 'bekliyorum'],
+  ["J'étudie le français", 'Fransızca çalışıyorum'],
+  ['Je travaille sur ce rapport', 'bu rapor üzerinde çalışıyorum'],
+  ['Je cherche mes clés', 'anahtarlarımı arıyorum'],
+  ["J'économise pour un voyage", 'bir gezi için para biriktiriyorum'],
+  ['Je nettoie la maison', 'evi temizliyorum'],
+  ['Je prépare le mariage', 'düğünü planlıyorum'],
+  ['Je lis ce livre', 'bu kitabı okuyorum'],
+  ["Je m'entraîne à la salle de sport", 'spor salonunda antrenman yapıyorum'],
+  ['Je cherche un nouveau travail', 'yeni bir iş arıyorum'],
+  ["J'écris mon mémoire", 'tezimi yazıyorum'],
+  ["J'apprends à cuisiner", 'yemek yapmayı öğreniyorum']
+].map(([t, tr]) => ({ t, tr }));
+
+export const DURATIONS = [
+  ['depuis dix minutes', 'on dakikadır'],
+  ['depuis une demi-heure', 'yarım saattir'],
+  ['depuis deux heures', 'iki saattir'],
+  ['depuis ce matin', 'bu sabahtan beri'],
+  ['depuis trois jours', 'üç gündür'],
+  ['depuis une semaine', 'bir haftadır'],
+  ['depuis un mois', 'bir aydır'],
+  ['depuis longtemps', 'uzun zamandır']
+].map(([t, tr]) => ({ t, tr }));
 
 export const OPINIONS = [
   ['cette décision était une erreur', 'bu karar bir hataydı'],
@@ -150,3 +179,71 @@ export const REQUESTS = [
   ['tenir la porte', 'kapıyı tutar mısın'],
   ['me garder une place', 'bana bir yer ayırır mısın']
 ].map(([r, tr]) => ({ r, tr }));
+
+// Hand-written, real everyday sentences — injected into the stream as-is.
+export const DAILY = [
+  // A1
+  ['A1', 'Salut, ça va?', 'Merhaba, nasılsın?'],
+  ['A1', 'Ça va bien, merci.', 'İyiyim, teşekkürler.'],
+  ['A1', "Comment tu t'appelles?", 'Adın ne?'],
+  ['A1', "Je m'appelle Anna.", 'Benim adım Anna.'],
+  ['A1', 'Enchanté!', 'Memnun oldum!'],
+  ['A1', 'Bonjour!', 'Günaydın!'],
+  ['A1', 'Bonne nuit!', 'İyi geceler!'],
+  ['A1', 'À demain!', 'Yarın görüşürüz!'],
+  ['A1', "J'ai faim.", 'Acıktım.'],
+  ['A1', "J'ai soif.", 'Susadım.'],
+  ['A1', 'Je suis fatigué.', 'Yorgunum.'],
+  ['A1', "Il fait très beau aujourd'hui.", 'Bugün hava çok güzel.'],
+  ['A1', 'Il pleut.', 'Yağmur yağıyor.'],
+  ['A1', 'Quel âge as-tu?', 'Kaç yaşındasın?'],
+  ['A1', "J'ai dix ans.", 'On yaşındayım.'],
+  ['A1', "Tu viens d'où?", 'Nerelisin?'],
+  ['A1', 'Je viens de Turquie.', 'Türkiye’denim.'],
+  ['A1', "C'est ma famille.", 'Bu benim ailem.'],
+  ['A1', "Je t'aime.", 'Seni seviyorum.'],
+  ['A1', 'Au revoir!', 'Hoşça kal!'],
+  // A2
+  ['A2', 'Je ne comprends pas.', 'Anlamıyorum.'],
+  ['A2', 'Vous pouvez répéter?', 'Tekrar eder misiniz?'],
+  ['A2', 'Vous pouvez parler plus lentement?', 'Daha yavaş konuşur musunuz?'],
+  ['A2', "Vous pouvez m'aider?", 'Bana yardım eder misiniz?'],
+  ['A2', 'Où sont les toilettes?', 'Tuvalet nerede?'],
+  ['A2', 'Quelle heure est-il?', 'Saat kaç?'],
+  ['A2', "On est quel jour aujourd'hui?", 'Bugün günlerden ne?'],
+  ['A2', 'Quand passe le prochain bus?', 'Bir sonraki otobüs ne zaman?'],
+  ['A2', 'Où je peux acheter un billet?', 'Bilet nereden alabilirim?'],
+  ['A2', "L'addition, s'il vous plaît.", 'Hesap, lütfen.'],
+  ['A2', 'Bon appétit!', 'Afiyet olsun!'],
+  ['A2', 'Désolé, je suis en retard.', 'Özür dilerim, geç kaldım.'],
+  ['A2', 'Pas de problème.', 'Sorun değil.'],
+  ['A2', 'Quelle bonne idée!', 'Ne güzel bir fikir!'],
+  ['A2', 'Je parle un peu français.', 'Biraz Fransızca konuşuyorum.'],
+  ['A2', 'Je me suis perdu.', 'Kayboldum.'],
+  ['A2', "Je peux m'asseoir ici?", 'Buraya oturabilir miyim?'],
+  ['A2', 'Je peux prendre une photo?', 'Fotoğraf çekebilir miyim?'],
+  ['A2', "C'est trop cher!", 'Bu çok pahalı!'],
+  ['A2', 'Il y a une réduction?', 'İndirim var mı?'],
+  // B1
+  ['B1', 'Hier soir, je me suis couché très tard.', 'Dün gece çok geç yattım.'],
+  ['B1', 'Demain, je dois me lever tôt.', 'Yarın erken kalkmam lazım.'],
+  ['B1', 'Tu as des projets pour le week-end?', 'Hafta sonu için planın var mı?'],
+  ['B1', "Ça fait longtemps qu'on ne s'est pas vus.", 'Uzun zamandır görüşemedik.'],
+  ['B1', "J'habite dans cette ville depuis deux ans.", 'İki yıldır bu şehirde yaşıyorum.'],
+  ['B1', 'Je cherche un nouveau travail en ce moment.', 'Şu sıralar yeni bir iş arıyorum.'],
+  ['B1', 'Je viens de commencer le sport.', 'Spora yeni başladım.'],
+  ['B1', 'Je te recommande vraiment ce livre.', 'Bu kitabı gerçekten tavsiye ederim.'],
+  ['B1', "J'aimerais avoir plus de temps.", 'Keşke daha fazla zamanım olsa.'],
+  ['B1', "Je promets que ça n'arrivera plus.", 'Söz veriyorum, bir daha olmayacak.'],
+  ['B1', "Tu as changé d'avis?", 'Fikrini değiştirdin mi?'],
+  ['B1', 'Ça vaut vraiment le coup?', 'Buna gerçekten değer mi?'],
+  // B2
+  ['B2', "Franchement, je n'en suis pas sûr.", 'Açıkçası pek emin değilim.'],
+  ['B2', "Je suis entièrement d'accord avec toi.", 'Bu konuda sana tamamen katılıyorum.'],
+  ['B2', "Si j'ai bien compris, la réunion de demain est annulée.", 'Yanlış anlamadıysam yarınki toplantı iptal.'],
+  ['B2', 'Je comprends ce que tu veux dire, mais je vois ça autrement.', 'Ne demek istediğini anlıyorum ama farklı düşünüyorum.'],
+  ['B2', 'Essaie de voir les choses sous cet angle.', 'Bir de şu açıdan bak.'],
+  ['B2', 'Je ferai de mon mieux.', 'Elimden geleni yapacağım.'],
+  ['B2', "Quoi qu'il arrive, ça valait la peine d'essayer.", 'Sonuç ne olursa olsun denemeye değerdi.'],
+  ['B2', 'Donne-moi un peu de temps pour réfléchir.', 'Düşünmek için bana biraz zaman ver.']
+].map(([level, t, tr]) => ({ level, t, tr }));
