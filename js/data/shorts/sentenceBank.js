@@ -5,7 +5,7 @@
 // and a hand-written DAILY set of real everyday sentences. Sorted A0 -> C2.
 // ============================================================================
 
-import { NOUNS, GOODS, PLACES, OWNABLE, ADJECTIVES, VERBS, OPINIONS, REQUESTS, ACTIVITIES, DURATIONS, DAILY } from './wordBanks.js';
+import { NOUNS, GOODS, PLACES, OWNABLE, ADJECTIVES, VERBS, OPINIONS, REQUESTS, ACTIVITIES, DURATIONS, DAILY } from './wordBanks.js?v=5';
 
 export const LEVEL_ORDER = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const levelRank = (c) => LEVEL_ORDER.indexOf(c);
@@ -78,6 +78,11 @@ const FRAMES = [
   // ---------------- A0 : first mini-sentences ----------------------------
   frame('A0', 'first-words', 999, [NOUNS], ([n]) => ({ en: `${cap(n.ind)} ${n.w}!`, tr: `Bir ${n.tr}!` })),
   frame('A0', 'pointing', 999, [NOUNS], ([n]) => ({ en: `Regarde, ${n.ind} ${n.w}!`, tr: `Bak, bir ${n.tr}!` })),
+  frame('A0', 'pointing', 999, [NOUNS], ([n]) => ({ en: `Là, ${n.ind} ${n.w}!`, tr: `İşte orada bir ${n.tr}!` })),
+  frame('A0', 'first-words', 999, [NOUNS], ([n]) => ({ en: `Encore ${n.ind} ${n.w}!`, tr: `Bir ${n.tr} daha!` })),
+  frame('A0', 'location', 999, [NOUNS], ([n]) => ({ en: `${cap(defN(n))} est là!`, tr: `${cap(n.tr)} burada!` })),
+  frame('A0', 'first-words', 999, [NOUNS], ([n]) => ({ en: `Oh, ${n.ind} ${n.w}!`, tr: `Oo, bir ${n.tr}!` })),
+  frame('A0', 'first-words', 260, [NOUNS, NOUNS], ([a, b]) => ({ en: `${cap(a.ind)} ${a.w} et ${b.ind} ${b.w}!`, tr: `Bir ${a.tr} ve bir ${b.tr}!` })),
 
   // ---------------- A1 -----------------------------------------------------
   frame('A1', 'naming', 999, [NOUNS], ([n]) => ({ en: `C'est ${n.ind} ${n.w}.`, tr: `Bu bir ${n.tr}.` })),
@@ -137,7 +142,25 @@ const FRAMES = [
 
   // ---------------- C2 -----------------------------------------------------
   frame('C2', 'nuance', 999, [OPINIONS], ([o]) => ({ en: `En toute honnêteté, ${o.c}.`, tr: `Tamamen dürüst olmam gerekirse, ${o.tr}.` })),
-  frame('C2', 'nuance', 999, [OPINIONS], ([o]) => ({ en: `Il faut bien l'admettre: ${o.c}.`, tr: `Kabul etmek gerek: ${o.tr}.` }))
+  frame('C2', 'nuance', 999, [OPINIONS], ([o]) => ({ en: `Il faut bien l'admettre: ${o.c}.`, tr: `Kabul etmek gerek: ${o.tr}.` })),
+
+  // ---- deeper upper-level content (matches the 6000-swipe growth pace) ----
+  frame('B1', 'describing', 400, [NOUNS, A], ([n, a]) => ({ en: `Je me demande si ${defN(n)} est vraiment aussi ${agree(a, n)}.`, tr: `${cap(n.tr)} gerçekten bu kadar ${a.tr} mı, merak ediyorum.` })),
+  frame('B1', 'describing', 400, [NOUNS, A], ([n, a]) => ({ en: `Tu ne trouves pas que ${defN(n)} est trop ${agree(a, n)}?`, tr: `Sence de ${n.tr} fazla ${a.tr} değil mi?` })),
+  frame('B2', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `Franchement, je n'aurais pas cru que ${defN(n)} serait aussi ${agree(a, n)}.`, tr: `Açıkçası ${n.tr} bu kadar ${a.tr} olur diye düşünmemiştim.` })),
+  frame('B2', 'describing', 500, [NOUNS, A], ([n, a]) => ({ en: `Tout dépend à quel point ${defN(n)} est ${agree(a, n)} en réalité.`, tr: `${cap(n.tr)} gerçekte ne kadar ${a.tr}, ona bağlı.` })),
+  frame('B2', 'describing', 400, [NOUNS, A], ([n, a]) => ({ en: `D'après mon expérience, ${defN(n)} est rarement aussi ${agree(a, n)}.`, tr: `Tecrübeme göre ${n.tr} nadiren bu kadar ${a.tr} olur.` })),
+  frame('B2', 'plans', 999, [V], ([v]) => ({ en: `Je n'aurais jamais cru qu'un jour je pourrais ${v.inf}.`, tr: `Bir gün ${v.trInf} aklıma gelmezdi.` })),
+  frame('B2', 'advice', 999, [V], ([v]) => ({ en: `J'ai du mal à ${v.inf} régulièrement.`, tr: `Düzenli olarak ${v.trInf} bana zor geliyor.` })),
+  frame('C1', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `Cela m'étonne de voir à quel point ${defN(n)} est ${agree(a, n)}.`, tr: `${cap(n.tr)} gerçekte ne kadar ${a.tr}, bu beni şaşırtıyor.` })),
+  frame('C1', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `Il ne faudrait pas supposer que ${defN(n)} est toujours aussi ${agree(a, n)}.`, tr: `${cap(n.tr)} her zaman bu kadar ${a.tr} olur diye varsaymamak gerek.` })),
+  frame('C1', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `Reste à savoir si ${defN(n)} est vraiment aussi ${agree(a, n)}.`, tr: `${cap(n.tr)} gerçekten bu kadar ${a.tr} mı, şüpheli.` })),
+  frame('C1', 'advice', 999, [V], ([v]) => ({ en: `Il serait tout à fait judicieux ${deInf(v.inf)} régulièrement.`, tr: `Düzenli olarak ${v.trInf} gerçekten mantıklı olurdu.` })),
+  frame('C1', 'advice', 999, [V], ([v]) => ({ en: `Je suis conscient que je devrais ${v.inf} plus souvent.`, tr: `Daha sık ${v.trInf} gerektiğinin farkındayım.` })),
+  frame('C2', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `On pourrait difficilement prétendre que ${defN(n)} soit particulièrement ${agree(a, n)}.`, tr: `${cap(n.tr)} özellikle ${a.tr} denemez pek.` })),
+  frame('C2', 'describing', 600, [NOUNS, A], ([n, a]) => ({ en: `Il est indéniable que ${defN(n)} est remarquablement ${agree(a, n)}.`, tr: `${cap(n.tr)} dikkat çekici derecede ${a.tr}, bu inkar edilemez.` })),
+  frame('C2', 'describing', 500, [OWNABLE, A], ([n, a]) => ({ en: `Rarement ai-je vu ${n.ind} ${n.w} aussi ${agree(a, n)}.`, tr: `Nadiren bu kadar ${a.tr} bir ${n.tr} gördüm.` })),
+  frame('C2', 'plans', 999, [V], ([v]) => ({ en: `Avec le recul, j'aurais dû ${v.inf} bien plus souvent.`, tr: `Geriye dönüp bakınca çok daha sık ${v.trInf} gerekirmiş.` }))
 ];
 
 let _bank = null;

@@ -9,7 +9,7 @@
 export const LOCALE = 'fr-FR';
 export const APP_LANG = 'Fransızca';
 // localStorage namespace — MUST be unique per clone (same-origin hosting).
-export const APP_KEY = 'ss-fr';
+export const APP_KEY = 'ss-fr-v2';
 
 export const FUNCTION_WORDS = [
   'le', 'la', 'les', 'l', 'un', 'une', 'des', 'de', 'du', 'd', 'et', 'ou', 'à',
